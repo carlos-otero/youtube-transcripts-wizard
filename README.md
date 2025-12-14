@@ -1,104 +1,120 @@
-# YouTube Transcripts Wizard (Windows, Python 3.10)
+# YouTube Transcripts Wizard (Windows & Linux)
 
-Small Windows-friendly toolkit to **list videos from a YouTube channel/playlist** and **download transcripts** for each video using [`youtube-transcript-api`](https://pypi.org/project/youtube-transcript-api/) and `yt-dlp`. It includes a simple **interactive wizard** you can double‑click on Windows. No coding required.
+A powerful cross-platform toolkit to **list videos from a YouTube channel/playlist** and **download transcripts** for each video. It includes robust **Anti-Ban features**, **Proxy support**, and **Smart Merging**.
 
-> This repo ships with a ready-to-run Python script (`yt_channel_transcripts2_checker.py`) and two Windows launchers (BAT/PowerShell) pinned to **Python 3.10**.
-
----
-
-## Features
-
-- List all videos from a channel (handles the **Videos** tab, nested shelves, and falls back to the channel's **Uploads** playlist).
-- Fetch transcripts in **TXT / JSON / SRT / VTT**.
-- **Skip already-downloaded** videos using an **existing files policy**:
-  - `same-format` (default): skip if the **same format** already exists.
-  - `any-format`: skip if **any** transcript format already exists.
-  - `none`: ignore disk checks.
-- **Dry-run** mode to preview actions without downloading.
-- Optional language fallback and translation (when available on YouTube).
+Includes interactive wizards for **Windows** (BAT/PowerShell) and **Linux** (Bash). No coding required.
 
 ---
 
-## Requirements
+## 🚀 New Features
 
-- **Windows** (for the launchers; the Python script itself works on other OSes).
-- **Python 3.10** with the Windows launcher (`py`).  
-- Python packages:
-  - `yt-dlp`
-  - `youtube-transcript-api`
-
-The launchers will auto-install these packages **for Python 3.10** if missing.
-
-> If you prefer to run the Python script directly, install dependencies manually:
->
-> ```bash
-> py -3.10 -m pip install -U yt-dlp youtube-transcript-api
-> ```
+* **Cross-Platform:** Works on Windows and Linux (Fedora/Ubuntu/Debian, etc.).
+* **Smart Organization:** Saves transcripts in `channel_transcripts/CHANNEL_NAME/`.
+* **Readable Format:** TXT files now include **[HH:MM:SS] timestamps**.
+* **Anti-Ban System:** Detects if YouTube blocks your IP (429 Too Many Requests), stops the script safely, and waits for you to change IP (e.g., reset router) to resume without losing progress.
+* **Proxy Support:** Native integration for **Webshare** and Generic HTTP/HTTPS proxies.
+* **Merge Function:** Optionally combines ALL downloaded transcripts into a single chronological `FULL_MERGE.txt` file (perfect for LLMs/ChatGPT).
+* **Existing Files Policy:** Skips already downloaded videos to save time and bandwidth.
 
 ---
 
-## Files
+## 📋 Requirements
 
-- `yt_channel_transcripts2_checker.py` — Core Python script (channel/playlist listing + transcript downloader + existing-files checker).
-- `Transcripts-Wizard-310-EN.bat` — CMD wizard (English prompts), pinned to **Python 3.10**.
-- `Transcripts-Wizard-310-EN.ps1` — PowerShell wizard (English prompts), pinned to **Python 3.10**.
-
-> Place the launcher and the Python script **in the same folder**.
+* **Python 3.10+**
+* **Windows** or **Linux**
+* Python packages (Auto-installed by the wizards):
+    * `yt-dlp`
+    * `youtube-transcript-api`
 
 ---
 
-## Quick Start (Windows)
+## 📂 Files
 
-### Option A — Double‑click the wizard
+* `yt_channel_transcripts2_checker.py` — Core Python script (The engine).
+* `wizard_linux.sh` — **New** Linux Launcher (Bash). Handles venv & dependencies automatically.
+* `Transcripts-Wizard-310-EN.bat` — Windows CMD Launcher.
+* `Transcripts-Wizard-310-EN.ps1` — Windows PowerShell Launcher.
 
-1. Put `Transcripts-Wizard-310-EN.bat` (or `.ps1`) **next to** `yt_channel_transcripts2_checker.py`.
-2. Double‑click the launcher.
-3. Answer the prompts:
-   - **URL** (channel/playlist/video)
-   - **Output folder** (e.g., `out`)
-   - **Format** (`txt`, `json`, `srt`, `vtt`)
-   - **Languages** (space‑separated, e.g., `es en`)
-   - Include **Shorts**?
-   - **Existing files policy**: `same-format` / `any-format` / `none`
-   - Filters: `since` / `until` (YYYY-MM-DD), `translate-to`
-   - Limits: `max`, `workers`
-   - **Overwrite** exact file? / **Dry-run**?
+---
 
-The wizard builds and executes the final command for you.
+## ⚡ Quick Start
 
-### Option B — Run the Python script directly
+### 🐧 Linux (Fedora, Ubuntu, etc.)
 
-```bash
-py -3.10 yt_channel_transcripts2_checker.py "https://www.youtube.com/@ChannelHandle" ^
-  -o out -f srt -l es en --existing-policy same-format --workers 8 --since 2024-01-01
+1.  Open your terminal in the folder.
+2.  Give execution permissions (only once):
+    ```bash
+    chmod +x wizard_linux.sh
+    ```
+3.  Run the wizard:
+    ```bash
+    ./wizard_linux.sh
+    ```
+4.  Follow the prompts (URL, Languages, Proxy options, etc.).
+
+### 🪟 Windows
+
+1.  Double-click `Transcripts-Wizard-310-EN.bat`.
+2.  Answer the prompts.
+
+---
+
+## 🛡️ Anti-Ban & Proxies
+
+YouTube often blocks IPs ("Sign in to confirm you are not a bot") when fetching many transcripts rapidly. This tool handles it in two ways:
+
+### 1. The "Router Reset" Method (Free)
+If you don't use a proxy and YouTube blocks you:
+1.  The script detects the **Critical IP Block** and **STOPS** immediately.
+2.  It saves the progress of everything downloaded so far.
+3.  **Action:** Turn off your Router/Modem for 10 seconds and turn it on again (to get a new dynamic IP).
+4.  Run the script again. It will skip the existing files and continue.
+
+### 2. Proxies (Recommended for heavy use)
+The wizard allows you to configure:
+* **Webshare:** (Recommended) Enter your Username/Password.
+* **Generic Proxy:** `http://user:pass@host:port`.
+
+---
+
+## 📂 Output Structure
+
+The tool creates a folder structure like this:
+
+```text
+channel_transcripts/
+└── Andrew_Huberman/
+    ├── index.csv                     # Database of all videos & status
+    ├── FULL_MERGE_Andrew_Huberman.txt # (Optional) All transcripts merged
+    ├── Welcome_to_the_Lab-VideoID.txt
+    ├── Sleep_Toolkit-VideoID.txt
+    └── ...
+````
+
+### TXT Format Example
+
+```text Welcome to the Huberman Lab Podcast. Today we are going to discuss...
 ```
 
-> On PowerShell, remove the `^` line continuations or replace with backticks `` ` ``.
+-----
 
----
+## 🛠️ CLI Usage (Manual)
 
-## Output
+If you prefer running the Python script directly without the wizard:
 
-- Transcript files saved in the output folder as:
-  ```
-  YYYY-MM-DD_<VIDEOID>_<slugified-title>.<ext>
-  ```
-- An `index.csv` is written with the status of each video:
-  - `ok`, `skipped-existing`, `skipped`, `no_transcript`, `write_error`, etc.
+```bash
+# Basic run
+python3 yt_channel_transcripts2_checker.py "[https://www.youtube.com/@Channel](https://www.youtube.com/@Channel)"
 
----
+# Advanced run (Spanish, Webshare Proxy, Merge compatible)
+python3 yt_channel_transcripts2_checker.py "URL" \
+  -o out -f txt -l es en \
+  --webshare-user "user" --webshare-pass "pass" \
+  --include-shorts
+```
 
-## Notes
-
-- PowerShell may block scripts by default. To allow running local scripts (once):
-  ```powershell
-  Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-  ```
-- This project **does not** require any YouTube API keys.
-- Some videos simply **do not have transcripts** on YouTube. The script will mark them as `no_transcript` unless you later add an ASR fallback (not included in this minimalist version).
-
----
+-----
 
 ## License
 
-MIT — do whatever, but no warranty.
+MIT.
