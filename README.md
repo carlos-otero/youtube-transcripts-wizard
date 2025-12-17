@@ -1,119 +1,112 @@
-# YouTube Transcripts Wizard (Windows & Linux)
+# YouTube Transcripts Manager v3.2 (Linux & Windows)
 
-A powerful cross-platform toolkit to **list videos from a YouTube channel/playlist** and **download transcripts** for each video. It includes robust **Anti-Ban features**, **Proxy support**, and **Smart Merging**.
+A powerful, cross-platform toolkit to **manage, download, and update** YouTube channel transcripts. Designed for power users and AI enthusiasts.
 
-Includes interactive wizards for **Windows** (BAT/PowerShell) and **Linux** (Bash). No coding required.
+> **New in v3.2:** > 🧠 **AI-Ready:** Automatically splits massive transcripts into chunks (perfect for ChatGPT/Gemini context limits).  
+> 🏠 **Home Assistant Integration:** Auto-restarts your Router/ONT if YouTube blocks your IP.  
+> ♾️ **Unattended Mode:** Endless loop that downloads, detects bans, resets internet, and resumes automatically.
 
 ---
 
-## 🚀 New Features
+## 🚀 Key Features
 
-* **Cross-Platform:** Works on Windows and Linux (Fedora/Ubuntu/Debian, etc.).
-* **Smart Organization:** Saves transcripts in `channel_transcripts/CHANNEL_NAME/`.
-* **Readable Format:** TXT files now include **[HH:MM:SS] timestamps**.
-* **Anti-Ban System:** Detects if YouTube blocks your IP (429 Too Many Requests), stops the script safely, and waits for you to change IP (e.g., reset router) to resume without losing progress.
-* **Proxy Support:** Native integration for **Webshare** and Generic HTTP/HTTPS proxies.
-* **Merge Function:** Optionally combines ALL downloaded transcripts into a single chronological `FULL_MERGE.txt` file (perfect for LLMs/ChatGPT).
-* **Existing Files Policy:** Skips already downloaded videos to save time and bandwidth.
+* **Interactive Menu:** Run without arguments to launch the App Mode.
+* **Smart Updates:** "Remembers" your channels. Select "Update All" to fetch only new videos.
+* **Anti-Ban System:** Detects YouTube 429 errors (IP Block) instantly.
+* **Auto-Healing Connection:** Can trigger a **Home Assistant script** to reboot your ONT/Router and waits until the internet connection (Ping 8.8.8.8) is back before resuming.
+* **Credential Manager:** Saves Webshare/Proxy secrets locally (`config.json`).
+* **Smart Merge & Split:** * Merges all channel videos into chronological text files.
+    * **Auto-Split:** If the file exceeds ~1MB (approx 250k tokens), it splits into `Part01`, `Part02`... to fit into LLMs like Gemini Pro 1.5.
+* **Readable Format:** `[HH:MM:SS] Text...` format.
 
 ---
 
 ## 📋 Requirements
 
 * **Python 3.10+**
-* **Windows** or **Linux**
-* Python packages (Auto-installed by the wizards):
-    * `yt-dlp`
-    * `youtube-transcript-api`
+* **Windows** or **Linux** (Fedora, Ubuntu, Debian...)
+* Python packages (Auto-installed): `yt-dlp`, `youtube-transcript-api`
 
 ---
 
-## 📂 Files
+## ⚡ Quick Start (Interactive Mode)
 
-* `yt_channel_transcripts2_checker.py` — Core Python script (The engine).
-* `wizard_linux.sh` — **New** Linux Launcher (Bash). Handles venv & dependencies automatically.
-* `Transcripts-Wizard-310-EN.bat` — Windows CMD Launcher.
-* `Transcripts-Wizard-310-EN.ps1` — Windows PowerShell Launcher.
+### 🐧 Linux
+```bash
+# Option A: Using the helper script (Recommended)
+./menu.sh
 
----
+# Option B: Using Python directly (activate venv first)
+python3 yt_channel_transcripts2_checker.py
 
-## ⚡ Quick Start
-
-### 🐧 Linux (Fedora, Ubuntu, etc.)
-
-1.  Open your terminal in the folder.
-2.  Give execution permissions (only once):
-    ```bash
-    chmod +x wizard_linux.sh
-    ```
-3.  Run the wizard:
-    ```bash
-    ./wizard_linux.sh
-    ```
-4.  Follow the prompts (URL, Languages, Proxy options, etc.).
+```
 
 ### 🪟 Windows
 
-1.  Double-click `Transcripts-Wizard-310-EN.bat`.
-2.  Answer the prompts.
+Double-click `Transcripts-Wizard-310-EN.bat`.
 
 ---
 
-## 🛡️ Anti-Ban & Proxies
-
-YouTube often blocks IPs ("Sign in to confirm you are not a bot") when fetching many transcripts rapidly. This tool handles it in two ways:
-
-### 1. The "Router Reset" Method (Free)
-If you don't use a proxy and YouTube blocks you:
-1.  The script detects the **Critical IP Block** and **STOPS** immediately.
-2.  It saves the progress of everything downloaded so far.
-3.  **Action:** Turn off your Router/Modem for 10 seconds and turn it on again (to get a new dynamic IP).
-4.  Run the script again. It will skip the existing files and continue.
-
-### 2. Proxies (Recommended for heavy use)
-The wizard allows you to configure:
-* **Webshare:** (Recommended) Enter your Username/Password.
-* **Generic Proxy:** `http://user:pass@host:port`.
-
----
-
-## 📂 Output Structure
-
-The tool creates a folder structure like this:
+## 🎮 The Menu
 
 ```text
-channel_transcripts/
-└── Andrew_Huberman/
-    ├── index.csv                     # Database of all videos & status
-    ├── FULL_MERGE_Andrew_Huberman.txt # (Optional) All transcripts merged
-    ├── Welcome_to_the_Lab-VideoID.txt
-    ├── Sleep_Toolkit-VideoID.txt
-    └── ...
-````
+==================================================
+   📺 YOUTUBE TRANSCRIPTS MANAGER v3.2
+==================================================
+1. 🔄 Update an existing channel
+2. 🚀 Update ALL downloaded channels
+3. ➕ Add a new channel
+4. 🏠 Configure Home Assistant
+5. 📚 Re-Merge & Split (Prepare for AI)
+6. 🔌 Reset ONT (Test HA)
+7. ♾️  UNATTENDED AUTO MODE (Loop + Auto Reset)
+0. ❌ Exit
 
-### TXT Format Example
-
-```text Welcome to the Huberman Lab Podcast. Today we are going to discuss...
 ```
 
------
+* **Option 5 (Re-Merge):** Scans your downloaded channels and creates/updates the merged files in `full_merges/`. It applies the **Split Logic** automatically.
+* **Option 7 (Unattended):** The "Set and Forget" mode. It will download everything. If blocked, it reboots your router, verifies internet connection, and continues exactly where it left off.
 
-## 🛠️ CLI Usage (Manual)
+---
 
-If you prefer running the Python script directly without the wizard:
+## 🏠 Home Assistant Setup (Auto-Reset)
 
-```bash
-# Basic run
-python3 yt_channel_transcripts2_checker.py "[https://www.youtube.com/@Channel](https://www.youtube.com/@Channel)"
+To enable automatic IP rotation when blocked:
 
-# Advanced run (Spanish, Webshare Proxy, Merge compatible)
-python3 yt_channel_transcripts2_checker.py "URL" \
-  -o out -f txt -l es en \
-  --webshare-user "user" --webshare-pass "pass" \
-  --include-shorts
+1. Go to **Option 4** in the menu.
+2. Enter your HA URL (e.g., `http://192.168.1.50:8123`).
+3. Enter a **Long-Lived Access Token** (Get it from your User Profile in HA).
+4. Enter the Script Entity ID that reboots your router (e.g., `script.restart_ont`).
+
+> The tool will verify real internet connectivity (Ping Google DNS) after the restart before resuming downloads.
+
+---
+
+## 📂 Folder Structure
+
+```text
+.
+├── full_merges/                  # AI-Ready Files
+│   ├── Huberman_2024-05-20_Part01.txt
+│   └── Huberman_2024-05-20_Part02.txt
+├── channel_transcripts/          # Source Data
+│   └── Andrew_Huberman/
+│       ├── .channel_meta.json    # Metadata (URL, config)
+│       ├── index.csv             # Database
+│       ├── Video_Title-ID.txt
+│       └── ...
+├── config.json                   # Secrets (Ignored by Git)
+└── yt_channel_transcripts2_checker.py
+
 ```
 
------
+---
+
+## 🛡️ Security Note
+
+The `config.json` file containing your Proxy/HA credentials is automatically added to `.gitignore`. **Never share this file.**
+
+---
 
 ## License
 

@@ -25,3 +25,5 @@ build/
 channel_transcripts/
 out/
 *.csv
+config.json
+full_merges/
